@@ -1,21 +1,35 @@
 #[allow(unused)]
-mod learn;
-mod learn_ownership;
-use learn_ownership::Node;
-/*
-    你在 main.rs 里直接 use learn_ownership::Node;,但没有先声明模块。必须先 mod,再 use:
-    顺序上 mod 声明放前面更清晰。
-*/
-use std::time::Instant;
-mod process_user;
-use process_user::{User, process_user};
-mod nonetypeerr;
-use nonetypeerr::*;
-mod thread_do;
 #[allow(unused_imports)]
-use std::thread;
-use thread_do::cpu_work;
+// mod learn;
+// mod learn_ownership;
+// use learn_ownership::Node;
+// /*
+//     你在 main.rs 里直接 use learn_ownership::Node;,但没有先声明模块。必须先 mod,再 use:
+//     顺序上 mod 声明放前面更清晰。
+// */
+// use std::time::Instant;
+// mod process_user;
+// use process_user::{User, process_user};
+// mod nonetypeerr;
+// use nonetypeerr::*;
+// mod thread_do;
+// #[allow(unused_imports)]
+// use std::thread;
+// use thread_do::cpu_work;
+use rand::Rng;
+use rand::RngExt;
+
+
 fn main() {
+
+  let mut rng = rand::rng();
+  let num: Vec<u64> = (0..10).map(|_| rng.random_range(0..101)).collect();
+
+  for i in num {
+    println!("输出rand::thread_rng().gen_range(1..101)的随机数: {}", i);
+  }
+
+    /*
     let start = Instant::now();
     #[warn(unused_variables)]
     let _results: Vec<u64> = (0..10_000_000).map(|n| learn::fibonacci(n % 30)).collect();
@@ -44,7 +58,7 @@ fn main() {
         .map(|_| thread::spawn(|| cpu_work(3_000_000)))
         .collect();
     let _results: Vec<u64> = handless.into_iter().map(|h| h.join().unwrap()).collect();
-    println!("4 threads: {:.2?}", start.elapsed());
+    println!("4 threads: {:.2?}", start.elapsed());*/
 }
 
 /* 错误代码原因的部分，详细内容可以查看deepseek。
