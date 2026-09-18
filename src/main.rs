@@ -1,5 +1,4 @@
-#[allow(unused)]
-#[allow(unused_imports)]
+
 // mod learn;
 // mod learn_ownership;
 // use learn_ownership::Node;
@@ -16,18 +15,45 @@
 // #[allow(unused_imports)]
 // use std::thread;
 // use thread_do::cpu_work;
-use rand::Rng;
-use rand::RngExt;
+
+use rand::prelude::*;
+use rand::distr;
+use thousands::Separable;
+#[allow(unused)]
+#[allow(unused_imports)]
+use rand::rngs::*;
+#[allow(unused)]
+#[allow(unused_imports)]
+use rand::seq::*;
 
 
 fn main() {
 
-  let mut rng = rand::rng();
-  let num: Vec<u64> = (0..10).map(|_| rng.random_range(0..101)).collect();
-
-  for i in num {
-    println!("输出rand::thread_rng().gen_range(1..101)的随机数: {}", i);
+  let mut count = 0;
+  let mut count2 = 0;
+  let mut count3 = 0;
+  let bernoulli = distr::Bernoulli::new(0.3).unwrap();
+  for _ in 0..1_000_000_000{
+    count2 += 1;
+    if count2 % 1_000_000 == 0{
+      count3 += 1;
+      println!("已完成 {} * 1_000_000 次实验", count3.separate_with_underscores());
+      count2 = 0;
+      
+    }
+    let value: bool = bernoulli.sample(&mut rand::rng());
+    if value{
+      count += 1;
+    }
   }
+  println!("\n在 1_000_000_000 次实验中,成功概率为 {} %", count as f64 / 1_000_000_000.0);
+  
+  // let mut rng = rand::rng();
+  // let num: Vec<u64> = (0..10).map(|_| rng.random_range(0..101)).collect();
+
+  // for i in num {
+  //   println!("输出rand::thread_rng().gen_range(1..101)的随机数: {}", i);
+  // }
 
     /*
     let start = Instant::now();
