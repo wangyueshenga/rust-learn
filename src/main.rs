@@ -1,20 +1,21 @@
 
-// mod learn;
-// mod learn_ownership;
-// use learn_ownership::Node;
-// /*
-//     你在 main.rs 里直接 use learn_ownership::Node;,但没有先声明模块。必须先 mod,再 use:
-//     顺序上 mod 声明放前面更清晰。
-// */
-// use std::time::Instant;
-// mod process_user;
-// use process_user::{User, process_user};
-// mod nonetypeerr;
-// use nonetypeerr::*;
-// mod thread_do;
-// #[allow(unused_imports)]
-// use std::thread;
-// use thread_do::cpu_work;
+mod learn;
+mod learn_ownership;
+use learn_ownership::Node;
+/*
+    你在 main.rs 里直接 use learn_ownership::Node;,但没有先声明模块。必须先 mod,再 use:
+    顺序上 mod 声明放前面更清晰。
+*/
+use learn::fibonacci;
+use std::time::Instant;
+mod process_user_mod;
+use process_user_mod::{User, process_user};
+mod nonetypeerr;
+use nonetypeerr::*;
+mod thread_do;
+#[allow(unused_imports)]
+use std::thread;
+use thread_do::cpu_work;
 mod bernoulli_get;
 use bernoulli_get::*;
 // use rand::distr::Distribution;
@@ -24,51 +25,63 @@ use rand::rngs::*;
 #[allow(unused)]
 #[allow(unused_imports)]
 use rand::seq::*;
+fn test_learn_rs() {
+  fibonacci(10);
+  let start = Instant::now();
+  #[warn(unused_variables)]
+  let _results: Vec<u64> = (0..10_000_000).map(|n| learn::fibonacci(n % 30)).collect();
+  println!("Elapsed: {:.2?}", start.elapsed());
 
+  let mut root = Node::new("root");
+  let child = Node::new("child");
+  let result = root.add_child(child);
+  println!("add_child() {:?}", result);
+  #[allow(unused)]
+  let mut string = "12345";
+  #[allow(unused)]
+  let user:User = process_user_mod::process_user(0xFFFF, &string);
+}
+#[allow(unused)]
+fn founction(){
+
+  let start = Instant::now();
+  #[warn(unused_variables)]
+  let _results: Vec<u64> = (0..10_000_000).map(|n| learn::fibonacci(n % 30)).collect();
+  println!("Elapsed: {:.2?}", start.elapsed());
+
+  let mut root = Node::new("root");
+  let child = Node::new("child");
+  root.add_child(child);
+
+  let string = "12345"; // let string: str = "12345";   // ❌ 显式标注成 str 才错
+  let _user: User = process_user(0xFFFF, string);
+
+  let _user = find_user(999);
+
+  match find_user(999) {
+      Some(user) => println!("{}", user.name),
+      None => println!("User not found"),
+  }
+
+  let _name = find_user(999)
+      .map(|u| u.name)
+      .unwrap_or_else(|| " Unknow".to_string());
+
+  let start = std::time::Instant::now();
+  let handless: Vec<_> = (0..4)
+      .map(|_| thread::spawn(|| cpu_work(3_000_000)))
+      .collect();
+  let _results: Vec<u64> = handless.into_iter().map(|h| h.join().unwrap()).collect();
+  println!("4 threads: {:.2?}", start.elapsed());
+}
 fn main() {
-
+  test_learn_rs();
   test_bernoulli_sample();
 
   test_bernoulli_fn_from_ratio();
-  // test_bernoulli();
+  test_bernoulli();
   test_bernoulli_fn_p();
-  // let mut rng = rand::rng();
-  // let num: Vec<u64> = (0..10).map(|_| rng.random_range(0..101)).collect();
-
-  // for i in num {
-  //   println!("输出rand::thread_rng().gen_range(1..101)的随机数: {}", i);
-  // }
-
-    /*
-    let start = Instant::now();
-    #[warn(unused_variables)]
-    let _results: Vec<u64> = (0..10_000_000).map(|n| learn::fibonacci(n % 30)).collect();
-    println!("Elapsed: {:.2?}", start.elapsed());
-
-    let mut root = Node::new("root");
-    let child = Node::new("child");
-    root.add_child(child);
-
-    let string = "12345"; // let string: str = "12345";   // ❌ 显式标注成 str 才错
-    let _user: User = process_user(0xFFFF, string);
-
-    let _user = find_user(999);
-
-    match find_user(999) {
-        Some(user) => println!("{}", user.name),
-        None => println!("User not found"),
-    }
-
-    let _name = find_user(999)
-        .map(|u| u.name)
-        .unwrap_or_else(|| " Unknow".to_string());
-
-    let start = std::time::Instant::now();
-    let handless: Vec<_> = (0..4)
-        .map(|_| thread::spawn(|| cpu_work(3_000_000)))
-        .collect();
-    let _results: Vec<u64> = handless.into_iter().map(|h| h.join().unwrap()).collect();
-    println!("4 threads: {:.2?}", start.elapsed());*/
+  // founction();
 }
 
 /* 错误代码原因的部分，详细内容可以查看deepseek。
@@ -217,92 +230,4 @@ fn main() {
     &string 是 &&str:Rust 会自动解引用让它匹配 &str,能编译,但多了一层没意义的引用,写法不自然。
 
     "12345" 是 &str 不是 str:因为 str 是不定长类型,大小在编译期未知,不能直接作为变量存在;必须用 &str 这个"指针 + 长度"的胖指针来引用它。
-*/
-
-/* 错误代码及错误信息：
-错误代码：
-src/porcess_user.rs
-pub fn process_user(user_id: i64, name: &str) -> User{
-    User {
-        id: user_id,
-        name: name.to_uppercase(),
-    }
-}
-
-
-#[derive(Deserialize)]
-
-pub struct UserInput {
-    id: i64,
-    name: String,
-}
-
-
-src/main.rs
-mod learn;
-use learn_ownership::Node;
-use std::time::Instant;
-mod process_user;
-
-fn main() {
-    let start = Instant::now();
-    #[warn(unused_variables)]
-    let _results: Vec<u64> = (0..10_000_000).map(|n| learn::fibonacci(n % 30)).collect();
-    println!("Elapsed: {:.2?}", start.elapsed());
-
-    let mut root = Node::new("root");
-    let child = Node::new("child");
-    let result = root.add_child(child);
-    println!("add_child() {:?}", result);
-
-    let mut string = "12345";
-    let user:User = porcess_user(0xFFFF: i64, &string);
-
-}
-
-错误信息：
-error info
-error: expected one of `)`, `,`, `.`, `?`, or an operator, found `:`
-  --> src\main.rs:18:40
-   |
-18 |     let user:User = porcess_user(0xFFFF: i64, &string);
-   |                                        ^ expected one of `)`, `,`, `.`, `?`, or an operator
-
-error[E0432]: unresolved import `learn_ownership`
- --> src\main.rs:2:5
-  |
-2 | use learn_ownership::Node;
-  |     ^^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `learn_ownership`
-  |
-help: to make use of source file src\learn_ownership.rs, use `mod learn_ownership` in this file to declare the module
-  |
-1 + mod learn_ownership;
-  |
-
-error: cannot find derive macro `Deserialize` in this scope
- --> src\process_user.rs:9:10
-  |
-9 | #[derive(Deserialize)]
-  |          ^^^^^^^^^^^
-
-error[E0425]: cannot find type `User` in this scope
- --> src\process_user.rs:1:50
-  |
-1 | pub fn process_user(user_id: i64, name: &str) -> User{
-  |                                                  ^^^^ not found in this scope
-error[E0422]: cannot find struct, variant or union type `User` in this scope
- --> src\process_user.rs:2:5
-  |
-2 |     User {
-  |     ^^^^ not found in this scope
-
-error[E0425]: cannot find type `User` in this scope
-  --> src\main.rs:18:14
-   |
-18 |     let user:User = porcess_user(0xFFFF: i64, &string);
-   |              ^^^^ not found in this scope
-
-Some errors have detailed explanations: E0422, E0425, E0432.
-For more information about an error, try `rustc --explain E0422`.
-error: could not compile `RUST` (bin "RUST") due to 6 previous errors
 */
