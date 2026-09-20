@@ -16,8 +16,8 @@ mod thread_do;
 #[allow(unused_imports)]
 use std::thread;
 use thread_do::cpu_work;
-mod bernoulli_get;
-use bernoulli_get::*;
+mod rand_;
+use rand_::*;
 // use rand::distr::Distribution;
 #[allow(unused)]
 #[allow(unused_imports)]
@@ -25,6 +25,7 @@ use rand::rngs::*;
 #[allow(unused)]
 #[allow(unused_imports)]
 use rand::seq::*;
+#[allow(unused)]
 fn test_learn_rs() {
   fibonacci(10);
   let start = Instant::now();
@@ -74,13 +75,19 @@ fn founction(){
   let _results: Vec<u64> = handless.into_iter().map(|h| h.join().unwrap()).collect();
   println!("4 threads: {:.2?}", start.elapsed());
 }
-fn main() {
-  test_learn_rs();
-  test_bernoulli_sample();
 
-  test_bernoulli_fn_from_ratio();
+#[allow(unused)]
+fn test_rand_distr(){
   test_bernoulli();
   test_bernoulli_fn_p();
+  test_bernoulli_fn_from_ratio();
+  test_bernoulli_sample();
+  test_bernoulli_sample_iter();
+}
+
+
+fn main() {
+  // test_rand_distr();
   // founction();
 }
 
